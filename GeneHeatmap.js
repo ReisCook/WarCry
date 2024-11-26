@@ -9,7 +9,7 @@ class GeneHeatmap {
         this.data = data;
 
         this.maxBuckets = 20;
-        this.maxCycles = 20;
+        this.maxCycles = 200;  // Increased to 200 generations
         this.currentCycle = 0;
         this.maxCount = 0;
     }
@@ -28,7 +28,6 @@ class GeneHeatmap {
             const cellWidth = Math.ceil(this.xSize / this.maxCycles);
             const cellHeight = Math.ceil(this.ySize / this.maxBuckets);
             
-            // Calculate maximum count for color scaling
             this.maxCount = Math.max(1, Math.max(...[].concat(...this.data)));
 
             // Draw each cell
@@ -38,13 +37,11 @@ class GeneHeatmap {
                 for (let bucketIdx = this.maxBuckets - 1; bucketIdx >= 0; bucketIdx--) {
                     const count = cycleData[bucketIdx];
                     
-                    // Calculate color intensity
                     let intensity = 0;
                     if (count > 0) {
                         intensity = Math.min(255, Math.floor((count / this.maxCount) * 255));
                     }
                     
-                    // Set color and draw cell
                     ctx.fillStyle = count > 0 ? 
                         `rgb(${255-intensity}, ${255-intensity}, 255)` : 
                         "#FFFFFF";
@@ -75,7 +72,10 @@ class GeneHeatmap {
     update() {
         this.currentCycle = this.data.length;
         if (this.currentCycle >= this.maxCycles) {
-            this.reset();
+            // Instead of resetting, shift data to keep last 200 generations
+            while (this.data.length > this.maxCycles) {
+                this.data.shift();
+            }
         }
     }
 

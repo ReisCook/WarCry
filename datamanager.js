@@ -35,7 +35,7 @@ class DataManager {
         const graphSpacing = 25;
         const heatmapHeight = 100;
         const heatmapSpacing = 25;
-        const startY = 25;  // Moved up since we removed stats display
+        const startY = 25;  
         const leftX = 810;
         const rightX = 1020;
 
@@ -96,6 +96,9 @@ class DataManager {
         
         // Update population count
         this.totalPop.push(allWarriors.length);
+        if (this.totalPop.length > 200) {  // Keep last 200 generations
+            this.totalPop.shift();
+        }
 
         // Initialize bucket arrays
         const radiusBuckets = {
@@ -155,6 +158,19 @@ class DataManager {
         this.weightData.separation.push(weightBuckets.separation);
         this.weightData.charge.push(weightBuckets.charge);
         this.weightData.flee.push(weightBuckets.flee);
+
+        // Keep only last 200 generations for all data arrays
+        Object.values(this.radiusData).forEach(dataArray => {
+            while (dataArray.length > 200) {
+                dataArray.shift();
+            }
+        });
+
+        Object.values(this.weightData).forEach(dataArray => {
+            while (dataArray.length > 200) {
+                dataArray.shift();
+            }
+        });
     }
 
     draw(ctx) {

@@ -4,6 +4,7 @@ class Automata {
         this.x = 0;
         this.y = 0;
         this.generation = 0;
+        this.lastCycleCount = 0;  // Track last cycle count to detect changes
 
         loadParameters();
         this.buildAutomata();
@@ -26,6 +27,10 @@ class Automata {
         // Set up managers
         this.bandManager = gameEngine.bandManager;
         this.combatManager = gameEngine.combatManager;
+
+        // Reset tracking
+        this.generation = 0;
+        this.lastCycleCount = 0;
     }
 
     reset() {
@@ -34,10 +39,11 @@ class Automata {
     }
 
     update() {
-        // Check if all battles in current cycle are complete
-        if (this.bandManager.isCycleComplete()) {
+        // Check if the cycle count has increased
+        if (this.bandManager.cycleCount > this.lastCycleCount) {
+            this.generation = this.bandManager.cycleCount;
+            this.lastCycleCount = this.bandManager.cycleCount;
             console.log("Cycle complete, generation: " + this.generation);
-            this.generation++;
         }
     }
 
