@@ -1,20 +1,4 @@
 class BandManager {
-    // Define helper methods before using them in constructor
-    presetGenes() {
-        let genes = [];
-        genes.push(new RealGene({ value: 0 }));     // cohesionRadius
-        genes.push(new RealGene({ value: 0 }));     // alignmentRadius
-        genes.push(new RealGene({ value: 0 }));     // separationRadius
-        genes.push(new RealGene({ value: 0.25 }));  // chargeRadius
-        genes.push(new RealGene({ value: 0.25 }));  // fleeRadius
-        genes.push(new RealGene({ value: 0 }));     // cohesionWeight
-        genes.push(new RealGene({ value: 0 }));     // alignmentWeight
-        genes.push(new RealGene({ value: 0 }));     // separationWeight
-        genes.push(new RealGene({ value: 1 }));     // chargeWeight
-        genes.push(new RealGene({ value: 1 }));     // fleeWeight
-        return genes;
-    }
-    
     zeroGenes() {
         let genes = [];
         for(let i = 0; i < 10; i++) {
@@ -34,25 +18,22 @@ class BandManager {
     createBand(loadStyle) {
         let band = [];
         let warrior;
-        
+
         switch(loadStyle) {
             case 0: // Zero genes
                 warrior = new Warrior({ genes: this.zGenes });
                 break;
-            case 1: // Random genes
+            default: // Random genes (new default behavior)
                 warrior = new Warrior({ genes: this.randomGenes() });
-                break;
-            default: // Preset genes
-                warrior = new Warrior({ genes: this.pGenes });
         }
-        
-        warrior.mutate();
+
+        warrior.mutate(); // Apply initial mutation
         for (let i = 0; i < PARAMS.bandSize; i++) {
             let newWarrior = new Warrior(warrior);
-            newWarrior.mutate();
+            newWarrior.mutate(); // Mutate each clone
             band.push(newWarrior);
         }
-    
+
         return band;
     }
 
@@ -64,13 +45,12 @@ class BandManager {
         // Array to track all active battles
         this.activeBattles = [];
 
-        // Initialize preset genes
+        // Initialize zero genes (unused but kept for completeness)
         this.zGenes = this.zeroGenes();
-        this.pGenes = this.presetGenes();
 
-        // Create initial bands
+        // Create initial bands using random genes (loadStyle = 1)
         for(let i = 0; i < PARAMS.numBands; i++) {
-            this.bands.push(this.createBand(2));
+            this.bands.push(this.createBand(1)); // Always use randomGenes
         }
 
         // Start first cycle of battles
@@ -228,7 +208,9 @@ class BandManager {
             let gene2 = parent2.genes[i];
             let childGene = new RealGene();
             childGene.value = Math.random() < 0.5 ? gene1.value : gene2.value;
-            childGene.mutate();
+            if (Math.random() < PARAMS.mutationRate) {
+                childGene.mutate();
+            }
             child.genes[i] = childGene;
         }
         return child;
