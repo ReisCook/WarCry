@@ -61,15 +61,11 @@ class BandManager {
         this.activeBattles = [];
         let totalPairs = PARAMS.numBands / 2;  // 25 pairs
 
-        // Create shuffled array of band indices
-        let bandIndices = Array.from({ length: PARAMS.numBands }, (_, i) => i);
-        this.shuffleArray(bandIndices);
-
-        // Create battles with random pairings
+        // Create all battles for this cycle
         for(let i = 0; i < totalPairs; i++) {
             let battle = {
-                band1: this.bands[bandIndices[i * 2]],
-                band2: this.bands[bandIndices[i * 2 + 1]],
+                band1: this.bands[i * 2],
+                band2: this.bands[i * 2 + 1],
                 entities: [],
                 complete: false,
                 id: i
