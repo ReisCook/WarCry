@@ -12,7 +12,7 @@ class Warrior {
 
         this.genes = [];
         // Use the genes from `other` if defined, otherwise generate default genes
-        for (let i = 0; i < 10; i++) {
+        for (let i = 0; i < 11; i++) {
             this.genes.push(new RealGene(other?.genes[i] || { value: Math.random() }));
         }
 
@@ -33,7 +33,7 @@ class Warrior {
         this.accelerationScale = 1;
         this.target = null;
         this.fleeing = false;
-        this.aggression = 0.5;
+        this.aggression = this.genes[10].value;
     }
 
     getDisplayCoords() {
