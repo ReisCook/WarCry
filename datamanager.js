@@ -244,4 +244,10 @@ class DataManager {
 
         if (socket) socket.emit("insert", data);
     }
+    
+    processGene(value, bucketArray) {
+        let bucket = Math.floor(value * 20);
+        if (bucket >= 20) bucket = 19;
+        bucketArray[bucket]++;
+    }
 }
