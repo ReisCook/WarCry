@@ -3,7 +3,7 @@ class GeneHeatmap {
         this.game = game;
         this.x = x;
         this.y = y;
-        this.xSize = 150;
+        this.xSize = 200;
         this.ySize = 100;
         this.label = label;
         this.data = data;
