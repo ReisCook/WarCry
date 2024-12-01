@@ -33,7 +33,7 @@
     <input type="radio" id="population" name="graphType" value="population">
     <label for="population">Other Stats</label><br />
     <div class="slider-container">
-        <label for="updatesPerDraw">Simulation Speed: </label>
+        <label for="updatesPerDraw">updatesPerDraw: </label>
         <input type="range" id="updatesPerDraw" min="1" max="100" value="1" 
                oninput="PARAMS.updatesPerDraw = parseInt(this.value); document.getElementById('updatesPerDrawValue').textContent = this.value">
         <span id="updatesPerDrawValue">1</span>
