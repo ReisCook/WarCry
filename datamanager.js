@@ -7,6 +7,7 @@ class DataManager {
     initData() {
         // Population graph data
         this.totalPop = [];
+        this.fleePop = [];
 
         // Gene data storage
         this.radiusData = {
@@ -46,6 +47,14 @@ class DataManager {
             startY, 
             [this.totalPop], 
             "Warriors"
+        );
+        // Initialize flee graph
+        this.fleeGraph = new Graph(
+            gameEngine,
+            leftX,
+            startY + graphHeight + graphSpacing,
+            [this.fleePop],
+            "Fleeing Warriors"
         );
 
         let currentY = startY + graphHeight + graphSpacing;
@@ -90,16 +99,27 @@ class DataManager {
     updateData() {
         // Get all warriors from all active battles
         let allWarriors = [];
+        let totalFleeing = 0;  // New counter for fleeing units
+        
         gameEngine.bandManager.activeBattles.forEach(battle => {
             allWarriors = allWarriors.concat(battle.entities);
+            
+            // Count fleeing units from CombatManager data
+            const battleStats = gameEngine.combatManager.battles.get(battle.id);
+            if (battleStats) {
+                totalFleeing += battleStats.teamOne.fleeing + battleStats.teamTwo.fleeing;
+            }
         });
         
         // Update population count
         this.totalPop.push(allWarriors.length);
+        this.fleePop.push(totalFleeing);
+        
         if (this.totalPop.length > 200) {  // Keep last 200 generations
             this.totalPop.shift();
+            this.fleePop.shift();
         }
-
+    
         // Initialize bucket arrays
         const radiusBuckets = {
             cohesion: new Array(20).fill(0),
@@ -108,7 +128,7 @@ class DataManager {
             charge: new Array(20).fill(0),
             flee: new Array(20).fill(0)
         };
-
+    
         const weightBuckets = {
             cohesion: new Array(20).fill(0),
             alignment: new Array(20).fill(0),
@@ -116,7 +136,7 @@ class DataManager {
             charge: new Array(20).fill(0),
             flee: new Array(20).fill(0)
         };
-
+    
         // Process each warrior's genes
         allWarriors.forEach(warrior => {
             // Process radius genes (0-4)
@@ -125,7 +145,7 @@ class DataManager {
             this.processGene(warrior.genes[2].value, radiusBuckets.separation);
             this.processGene(warrior.genes[3].value, radiusBuckets.charge);
             this.processGene(warrior.genes[4].value, radiusBuckets.flee);
-
+    
             // Process weight genes (5-9)
             this.processGene(warrior.genes[5].value, weightBuckets.cohesion);
             this.processGene(warrior.genes[6].value, weightBuckets.alignment);
@@ -133,7 +153,7 @@ class DataManager {
             this.processGene(warrior.genes[8].value, weightBuckets.charge);
             this.processGene(warrior.genes[9].value, weightBuckets.flee);
         });
-
+    
         // Update heatmap data
         this.updateHeatmapData(radiusBuckets, weightBuckets);
     }
@@ -175,11 +195,12 @@ class DataManager {
 
     draw(ctx) {
         if (!document.getElementById("graphs").checked) return;
-
+    
         const selectedTab = document.querySelector('input[name="graphType"]:checked').value;
-
+    
         if (selectedTab === "population") {
             this.populationGraph.draw(ctx);
+            this.fleeGraph.draw(ctx);  // Add this line to show flee graph
         } else {
             Object.values(this.radiusHeatmaps).forEach(heatmap => heatmap.draw(ctx));
             Object.values(this.weightHeatmaps).forEach(heatmap => heatmap.draw(ctx));
