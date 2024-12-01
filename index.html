@@ -27,22 +27,11 @@
     <button type="button" onclick=reset()>Reset</button><br />
     <input type="checkbox" id="graphs" checked/>Draw Graphs<br />
     <input type="checkbox" id="visuals" checked/>Draw Simulation<br />
-    <input type="checkbox" id="pullweights" />Pull Weights From Sliders<br />
     <br />
     <input type="radio" id="genes" name="graphType" value="genes" checked>
     <label for="genes">Gene Evolution</label>
     <input type="radio" id="population" name="graphType" value="population">
-    <label for="population">Population Stats</label><br />
+    <label for="population">Other Stats</label><br />
     <br />
-    <div class="slider-container">
-        <label for="cohesion">Cohesion</label>
-        <input type="range" id="cohesion" min="0" max="10" value="0.7" step= "0.1" class="slider">
-        
-        <label for="alignment">Alignment</label>
-        <input type="range" id="alignment" min="0" max="10" value="0.6" step= "0.1" class="slider">
-
-        <label for="separation">Separation</label>
-        <input type="range" id="separation" min="0" max="10" value="4.5" step="0.1" class="slider">
-    </div>
 </body>
 </html>
