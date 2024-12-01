@@ -60,7 +60,7 @@ class DataManager {
             "Fleeing Warriors"
         );
     
-        let currentY = startY + graphHeight + graphSpacing;
+        let currentY = startY + graphHeight;
     
         // Initialize radius heatmaps (left column)
         this.radiusHeatmaps = {
