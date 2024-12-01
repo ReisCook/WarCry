@@ -201,8 +201,6 @@ class Warrior {
         normalize(separation);
         normalize(charge);
 
-        if (document.getElementById("pullweights").checked && this.team) this.pullWeightsFromHTML();
-
         var steeringVector = this.fleeing ? 
         {
             x: (charge.x * this.fleeWeight),
