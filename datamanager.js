@@ -26,6 +26,8 @@ class DataManager {
             flee: []
         };
 
+        this.aggressionData = [];
+
         // Initialize visualizations
         this.initializeVisualizations();
     }
@@ -39,7 +41,7 @@ class DataManager {
         const startY = 25;  
         const leftX = 810;
         const rightX = 1020;
-
+    
         // Initialize population graph
         this.populationGraph = new Graph(
             gameEngine, 
@@ -48,7 +50,8 @@ class DataManager {
             [this.totalPop], 
             "Warriors"
         );
-        // Initialize flee graph
+    
+        // Add flee graph right below population graph
         this.fleeGraph = new Graph(
             gameEngine,
             leftX,
@@ -56,9 +59,9 @@ class DataManager {
             [this.fleePop],
             "Fleeing Warriors"
         );
-
+    
         let currentY = startY + graphHeight + graphSpacing;
-
+    
         // Initialize radius heatmaps (left column)
         this.radiusHeatmaps = {
             cohesion: new GeneHeatmap(gameEngine, leftX, currentY, 
@@ -76,7 +79,7 @@ class DataManager {
                 currentY + (heatmapHeight + heatmapSpacing) * 4, 
                 this.radiusData.flee, "Flee R")
         };
-
+    
         // Initialize weight heatmaps (right column)
         this.weightHeatmaps = {
             cohesion: new GeneHeatmap(gameEngine, rightX, currentY, 
@@ -94,12 +97,21 @@ class DataManager {
                 currentY + (heatmapHeight + heatmapSpacing) * 4, 
                 this.weightData.flee, "Flee W")
         };
+    
+        // Initialize aggression heatmap
+        this.aggressionHeatmap = new GeneHeatmap(
+            gameEngine,
+            leftX,
+            currentY + (heatmapHeight + heatmapSpacing) * 5,
+            this.aggressionData,
+            "Aggression"
+        );
     }
 
     updateData() {
         // Get all warriors from all active battles
         let allWarriors = [];
-        let totalFleeing = 0;  // New counter for fleeing units
+        let totalFleeing = 0;
         
         gameEngine.bandManager.activeBattles.forEach(battle => {
             allWarriors = allWarriors.concat(battle.entities);
@@ -115,7 +127,7 @@ class DataManager {
         this.totalPop.push(allWarriors.length);
         this.fleePop.push(totalFleeing);
         
-        if (this.totalPop.length > 200) {  // Keep last 200 generations
+        if (this.totalPop.length > 200) {
             this.totalPop.shift();
             this.fleePop.shift();
         }
@@ -137,6 +149,8 @@ class DataManager {
             flee: new Array(20).fill(0)
         };
     
+        const aggressionBuckets = new Array(20).fill(0);  // New bucket array for aggression
+    
         // Process each warrior's genes
         allWarriors.forEach(warrior => {
             // Process radius genes (0-4)
@@ -152,16 +166,19 @@ class DataManager {
             this.processGene(warrior.genes[7].value, weightBuckets.separation);
             this.processGene(warrior.genes[8].value, weightBuckets.charge);
             this.processGene(warrior.genes[9].value, weightBuckets.flee);
+    
+            // Process aggression gene (10)
+            this.processGene(warrior.genes[10].value, aggressionBuckets);
         });
     
         // Update heatmap data
         this.updateHeatmapData(radiusBuckets, weightBuckets);
-    }
-
-    processGene(value, bucketArray) {
-        let bucket = Math.floor(value * 20);
-        if (bucket >= 20) bucket = 19;
-        bucketArray[bucket]++;
+        
+        // Update aggression data
+        this.aggressionData.push(aggressionBuckets);
+        if (this.aggressionData.length > 200) {
+            this.aggressionData.shift();
+        }
     }
 
     updateHeatmapData(radiusBuckets, weightBuckets) {
@@ -200,10 +217,11 @@ class DataManager {
     
         if (selectedTab === "population") {
             this.populationGraph.draw(ctx);
-            this.fleeGraph.draw(ctx);  // Add this line to show flee graph
+            this.fleeGraph.draw(ctx);
         } else {
             Object.values(this.radiusHeatmaps).forEach(heatmap => heatmap.draw(ctx));
             Object.values(this.weightHeatmaps).forEach(heatmap => heatmap.draw(ctx));
+            this.aggressionHeatmap.draw(ctx);
         }
     }
 
