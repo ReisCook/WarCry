@@ -31,6 +31,14 @@ class Automata {
         // Reset tracking
         this.generation = 0;
         this.lastCycleCount = 0;
+
+        // Adjust canvas size based on world parameters
+        const canvas = document.getElementById('gameWorld');
+        canvas.width = PARAMS.worldWidth * 2;  // Double size to accommodate graphs
+        canvas.height = PARAMS.worldHeight;
+        
+        // Reset context after canvas resize
+        gameEngine.ctx = canvas.getContext('2d');
     }
 
     reset() {
