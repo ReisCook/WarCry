@@ -1,12 +1,12 @@
 class Warrior {
     constructor(other) {
-        this.radius = 5;
-        this.health = 10;
-        this.maxSpeed = 50;
-        this.maxForce = 5;
+        this.radius = PARAMS.warriorRadius;
+        this.health = PARAMS.warriorHealth;
+        this.maxSpeed = PARAMS.warriorMaxSpeed;
+        this.maxForce = PARAMS.warriorMaxForce;
         this.battleId = 0;
 
-        // Real coordinates in 800x800 space
+        // Real coordinates in worldWidth x worldHeight space
         this.x = 0;
         this.y = 0;
 
@@ -83,13 +83,13 @@ class Warrior {
     reset(team, battleId = 0) {
         this.team = team;
         this.battleId = battleId;
-        this.health = 10;
+        this.health = PARAMS.warriorHealth; // Use current parameter value
         this.target = null;
         this.fleeing = false;
         this.color = this.team ? "Red" : "Blue";
         this.fleecolor = this.team ? "Pink" : "Lightblue";
 
-        // Spawn in full 800x800 space
+        // Spawn in worldWidth x worldHeight space
         this.x = Math.random() * PARAMS.worldWidth / 16;
         if(this.team) this.x = PARAMS.worldWidth - this.x;
         this.y = Math.random() * PARAMS.worldHeight;
@@ -221,7 +221,7 @@ class Warrior {
         this.velocity.y += steeringVector.y;
         limit(this.velocity, this.maxSpeed);
 
-        // Update position in full 800x800 space
+        // Update position using current worldWidth/Height
         this.x += this.velocity.x * gameEngine.clockTick;
         this.y += this.velocity.y * gameEngine.clockTick;
 
