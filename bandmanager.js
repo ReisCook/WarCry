@@ -171,9 +171,12 @@ class BandManager {
         let newBand = [];
         let numSurvivors = survivingWarriors.length;
 
+        // Handle case where band size has changed
+        const currentBandSize = PARAMS.bandSize;
+
         if (numSurvivors === 0) {
             // Generate new random warriors if no survivors
-            for (let i = 0; i < PARAMS.bandSize; i++) {
+            for (let i = 0; i < currentBandSize; i++) {
                 let warrior = new Warrior();
                 warrior.mutate();
                 warrior.team = team;
@@ -190,7 +193,7 @@ class BandManager {
         });
 
         // Generate remaining warriors through crossover
-        while (newBand.length < PARAMS.bandSize) {
+        while (newBand.length < currentBandSize) {
             let parent1 = survivingWarriors[Math.floor(Math.random() * numSurvivors)];
             let parent2 = survivingWarriors[Math.floor(Math.random() * numSurvivors)];
             let child = this.crossoverWarriors(parent1, parent2);
