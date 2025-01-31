@@ -6,7 +6,7 @@ var socket = null;
 if (window.io !== undefined) {
     console.log("Database connected!");
 
-    socket = io.connect('http://73.225.31.4:8888');
+    socket = io.connect('http://73.19.38.112:8888');
 
     socket.on("connect", function () {
         databaseConnected();
@@ -20,7 +20,7 @@ if (window.io !== undefined) {
 }
 
 function reset() {
-    // Let automata handle the reset since it manages the simulation state
+    // Reset will trigger loadParameters() which updates UI
     gameEngine.board.reset();
 }
 
@@ -33,6 +33,9 @@ ASSET_MANAGER.downloadAll(function () {
     
     // Create initial automata
     new Automata();
+
+    // Initialize UI with current parameters
+    loadParameters();
 
     gameEngine.start();
 });
