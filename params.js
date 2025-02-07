@@ -8,7 +8,7 @@ var PARAMS = {
     bandSize: 50,
 
     // warrior
-    warriorHealth: 10,
+    warriorHealth: 5,
     warriorMaxSpeed: 50,
     warriorMaxForce: 5,
     warriorRadius: 5,
