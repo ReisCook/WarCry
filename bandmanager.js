@@ -59,13 +59,18 @@ class BandManager {
 
     initiateCycle() {
         this.activeBattles = [];
+        
+        // Create a shuffled copy of the bands array
+        let shuffledBands = [...this.bands];
+        shuffleArray(shuffledBands);
+        
         let totalPairs = PARAMS.numBands / 2;  // 25 pairs
-
-        // Create all battles for this cycle
+    
+        // Create all battles for this cycle using shuffled bands
         for(let i = 0; i < totalPairs; i++) {
             let battle = {
-                band1: this.bands[i * 2],
-                band2: this.bands[i * 2 + 1],
+                band1: shuffledBands[i * 2],
+                band2: shuffledBands[i * 2 + 1],
                 entities: [],
                 complete: false,
                 id: i
@@ -75,7 +80,7 @@ class BandManager {
             this.initializeBattle(battle);
             this.activeBattles.push(battle);
         }
-
+    
         console.log(`Initiated cycle ${this.cycleCount} with ${this.activeBattles.length} battles`);
     }
 
