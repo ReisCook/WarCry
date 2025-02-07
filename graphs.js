@@ -1,4 +1,4 @@
-var socket = io.connect("http://67.183.114.71:8888");
+var socket = io.connect("http://73.19.38.112:8888");
 var context;
 var ticks = 600;
 var maxRuns = 100;
