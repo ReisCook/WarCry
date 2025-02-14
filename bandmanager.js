@@ -174,6 +174,10 @@ class BandManager {
 
     generateNewBand(oldBand, survivingWarriors, team) {
         let newBand = [];
+
+        // Apply 10% death chance to survivors
+        survivingWarriors = survivingWarriors.filter(() => Math.random() > 0.1);
+        
         let numSurvivors = survivingWarriors.length;
 
         // Handle case where band size has changed
