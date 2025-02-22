@@ -17,11 +17,11 @@ class Warrior {
         }
 
         // visual radiuses
-        this.cohesionRadius = this.genes[0].value * 200;
-        this.alignmentRadius = this.genes[1].value * 200;
-        this.separationRadius = this.genes[2].value * 200;
-        this.chargeRadius = this.genes[3].value * 200;
-        this.fleeRadius = this.genes[4].value * 200;
+        this.cohesionRadius = this.genes[0].value * 500;
+        this.alignmentRadius = this.genes[1].value * 500;
+        this.separationRadius = this.genes[2].value * 500;
+        this.chargeRadius = this.genes[3].value * 500;
+        this.fleeRadius = this.genes[4].value * 500;
 
         // movement weights
         this.cohesionWeight = this.genes[5].value * 10;
@@ -51,7 +51,14 @@ class Warrior {
     }
 
     collide(other) {
-        return distance(this, other) < this.radius + other.radius;
+        const dist = distance(this, other);
+        const minDist = this.radius + other.radius;
+        const overlap = minDist - dist;
+        
+        return {
+            hasCollision: dist < minDist,
+            overlap: overlap
+        };
     }
 
     collideLeft() {
@@ -117,6 +124,7 @@ class Warrior {
         return Math.random() > this.aggression;
     }
 
+    
     update() {    
         var cohesionCount = 0;
         var alignmentCount = 0;
@@ -126,39 +134,61 @@ class Warrior {
         var separation = { x: 0, y: 0 };
         var charge = { x: 0, y: 0 };
     
-        // Only interact with warriors from the same battle
         const battle = gameEngine.bandManager.activeBattles[this.battleId];
         if (!battle) return;
         
         const battleEntities = battle.entities;
         this.target = null;
-
+    
         for (var i = 0; i < battleEntities.length; i++) {
             var ent = battleEntities[i];
             if (ent === this) continue;
-
-            var dist = distance(this, ent);
-
-            if (this.collide(ent)) {
+    
+            var collisionResult = this.collide(ent);
+    
+            if (collisionResult.hasCollision) {
+                // Calculate collision normal
+                const normalX = this.x - ent.x;
+                const normalY = this.y - ent.y;
+                
+                // Normalize the collision vector
+                const normalLength = Math.sqrt(normalX * normalX + normalY * normalY);
+                const unitNormalX = normalX / normalLength;
+                const unitNormalY = normalY / normalLength;
+    
+                // Calculate movement amount (half the overlap)
+                const moveAmount = collisionResult.overlap / 2;
+    
+                // Move this warrior away from collision
+                this.x += unitNormalX * moveAmount;
+                this.y += unitNormalY * moveAmount;
+    
+                // Move other warrior away from collision
+                ent.x -= unitNormalX * moveAmount;
+                ent.y -= unitNormalY * moveAmount;
+    
+                // Apply damage if warriors are on different teams
                 if (this.team !== ent.team) {
                     this.hit();
                     ent.hit();
                 }
             }
-
+    
+            var dist = distance(this, ent);
+    
             if (this.team === ent.team) {
                 if (dist < this.cohesionRadius) {
                     cohesionCount++;
                     cohesion.x += ent.x;
                     cohesion.y += ent.y;
                 }
-
+    
                 if (dist < this.alignmentRadius) {
                     alignmentCount++;
                     alignment.x += ent.velocity.x;
                     alignment.y += ent.velocity.y;
                 }
-
+    
                 if (dist < this.separationRadius) {
                     separation.x += (this.x - ent.x) / dist / dist;
                     separation.y += (this.y - ent.y) / dist / dist;
@@ -180,12 +210,12 @@ class Warrior {
             cohesion.x = (cohesion.x / cohesionCount) - this.x;
             cohesion.y = (cohesion.y / cohesionCount) - this.y;
         }
-
+    
         if (alignmentCount > 0) {
             alignment.x = (alignment.x / alignmentCount) - this.velocity.x;
             alignment.y = (alignment.y / alignmentCount) - this.velocity.y;
         }
-
+    
         if (this.target) {
             if(!this.fleeing) {
                 charge.x = this.target.x - this.x;
@@ -195,12 +225,12 @@ class Warrior {
                 charge.y = this.y - this.target.y;        
             }
         }
-
+    
         normalize(cohesion);
         normalize(alignment);
         normalize(separation);
         normalize(charge);
-
+    
         var steeringVector = this.fleeing ? 
         {
             x: (charge.x * this.fleeWeight),
@@ -216,15 +246,14 @@ class Warrior {
         normalize(steeringVector);
         steeringVector.x *= this.accelerationScale;
         limit(steeringVector, this.maxForce);
-
+    
         this.velocity.x += steeringVector.x;
         this.velocity.y += steeringVector.y;
         limit(this.velocity, this.maxSpeed);
-
-        // Update position using current worldWidth/Height
+    
         this.x += this.velocity.x * gameEngine.clockTick;
         this.y += this.velocity.y * gameEngine.clockTick;
-
+    
         if(this.fled()) this.removeFromWorld = true;
     }
     
