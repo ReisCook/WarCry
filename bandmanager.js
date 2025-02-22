@@ -17,23 +17,14 @@ class BandManager {
 
     createBand(loadStyle) {
         let band = [];
-        let warrior;
-
-        switch(loadStyle) {
-            case 0: // Zero genes
-                warrior = new Warrior({ genes: this.zGenes });
-                break;
-            default: // Random genes (new default behavior)
-                warrior = new Warrior({ genes: this.randomGenes() });
-        }
-
-        warrior.mutate(); // Apply initial mutation
+    
+        // Create each warrior with its own random genes
         for (let i = 0; i < PARAMS.bandSize; i++) {
-            let newWarrior = new Warrior(warrior);
-            newWarrior.mutate(); // Mutate each clone
-            band.push(newWarrior);
+            let warrior = new Warrior({ genes: this.randomGenes() });
+            warrior.mutate(); // Still apply initial mutation
+            band.push(warrior);
         }
-
+    
         return band;
     }
 
