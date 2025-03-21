@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Warrior Evolution</title>
+    <link rel="stylesheet" type="text/css" href="./style.css">
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.1/socket.io.js"></script>
+    <script type="text/javascript" src="./assetmanager.js"></script>
+    <script type="text/javascript" src="./GeneHeatmap.js"></script>
+    <script type="text/javascript" src="./graph.js"></script>
+    <script type="text/javascript" src="./gameengine.js"></script>
+    <script type="text/javascript" src="./realgene.js"></script>
+    <script type="text/javascript" src="./warrior.js"></script>
+    <script type="text/javascript" src="./bandmanager.js"></script>
+    <script type="text/javascript" src="./combatmanager.js"></script>
+    <script type="text/javascript" src="./vocalizationmanager.js"></script>
+    <script type="text/javascript" src="./util.js"></script>
+    <script type="text/javascript" src="./params.js"></script>
+    <script type="text/javascript" src="./datamanager.js"></script>
+    <script type="text/javascript" src="./automata.js"></script>
+    <script type="text/javascript" src="./main.js"></script>
+</head>
+<body>
+    <div class="container">
+        <canvas id="gameWorld" width="1600" height="1000"></canvas>
+        <div class="controls">
+            <div class="control-section">
+                <h3>Simulation Parameters</h3>
+                <div class="parameter">
+                    <label for="worldWidth">World Width:</label>
+                    <input type="number" id="worldWidth" min="400" max="2000" value="800" 
+                           oninput="PARAMS.worldWidth = parseInt(this.value)">
+                </div>
+                <div class="parameter">
+                    <label for="worldHeight">World Height:</label>
+                    <input type="number" id="worldHeight" min="400" max="2000" value="800"
+                           oninput="PARAMS.worldHeight = parseInt(this.value)">
+                </div>
+                <div class="parameter">
+                    <label for="updatesPerDraw">Updates Per Draw:</label>
+                    <input type="range" id="updatesPerDraw" min="1" max="100" value="1" 
+                           oninput="PARAMS.updatesPerDraw = parseInt(this.value); document.getElementById('updatesPerDrawValue').textContent = this.value">
+                    <span id="updatesPerDrawValue">1</span>
+                </div>
+            </div>
+
+            <div class="control-section">
+                <h3>Warrior Parameters</h3>
+                <div class="parameter">
+                    <label for="bandSize">Warriors Per Band:</label>
+                    <input type="number" id="bandSize" min="10" max="200" value="50"
+                           oninput="PARAMS.bandSize = parseInt(this.value)">
+                </div>
+                <div class="parameter">
+                    <label for="warriorHealth">Health:</label>
+                    <input type="number" id="warriorHealth" min="1" max="50" value="10"
+                           oninput="PARAMS.warriorHealth = parseInt(this.value)">
+                </div>
+                <div class="parameter">
+                    <label for="warriorMaxSpeed">Max Speed:</label>
+                    <input type="number" id="warriorMaxSpeed" min="10" max="200" value="50"
+                           oninput="PARAMS.warriorMaxSpeed = parseInt(this.value)">
+                </div>
+                <div class="parameter">
+                    <label for="warriorMaxForce">Max Force:</label>
+                    <input type="number" id="warriorMaxForce" min="1" max="20" value="5"
+                           oninput="PARAMS.warriorMaxForce = parseInt(this.value)">
+                </div>
+                <div class="parameter">
+                    <label for="warriorRadius">Radius:</label>
+                    <input type="number" id="warriorRadius" min="1" max="20" value="5"
+                           oninput="PARAMS.warriorRadius = parseInt(this.value)">
+                </div>
+            </div>
+
+            <div class="control-section">
+                <h3>Vocalization Parameters</h3>
+                <div class="parameter">
+                    <label for="vocalCooldown">Vocalization Cooldown (s):</label>
+                    <input type="number" id="vocalCooldown" min="0.1" max="10" step="0.1" value="1"
+                           oninput="PARAMS.vocalCooldown = parseFloat(this.value)">
+                </div>
+                <div class="parameter">
+                    <label>Signal Processing Model:</label>
+                    <div class="radio-group">
+                        <input type="radio" id="signalModelClosest" name="signalModel" value="closest" checked
+                               onchange="PARAMS.signalModel = 'closest'">
+                        <label for="signalModelClosest">Closest Signal</label>
+                        
+                        <input type="radio" id="signalModelAverage" name="signalModel" value="average"
+                               onchange="PARAMS.signalModel = 'average'">
+                        <label for="signalModelAverage">Average Signal</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="control-section">
+                <h3>Display Options</h3>
+                <div class="parameter">
+                    <input type="checkbox" id="graphs" checked/>
+                    <label for="graphs">Show Graphs</label>
+                </div>
+                <div class="parameter">
+                    <input type="checkbox" id="visuals" checked/>
+                    <label for="visuals">Show Battle Boundaries</label>
+                </div>
+                <div class="parameter">
+                    <input type="checkbox" id="showVocalizations" checked/>
+                    <label for="showVocalizations">Show Vocalizations</label>
+                </div>
+                <div class="parameter">
+                    <input type="radio" id="genes" name="graphType" value="genes" checked>
+                    <label for="genes">Gene Evolution</label>
+                    <input type="radio" id="population" name="graphType" value="population">
+                    <label for="population">Population Stats</label>
+                    <input type="radio" id="vocalization" name="graphType" value="vocalization">
+                    <label for="vocalization">Vocalization Stats</label>
+                </div>
+            </div>
+
+            <div class="control-section">
+                <button type="button" onclick="reset()">Reset Simulation</button>
+                <div id="db" class="db-status">Database</div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
