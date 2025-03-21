@@ -30,8 +30,8 @@ class Warrior {
         this.chargeWeight = this.genes[8].value * 10;
         this.fleeWeight = this.genes[9].value * 10;
 
-        // vocalization parameters
-        this.vocalizationRadius = this.genes[11].value * 500;
+        // vocalization parameters - reduced from 500 to 200
+        this.vocalizationRadius = this.genes[11].value * 200;
         this.vocalizationProbability = this.genes[12].value;
         this.signalInterpretation = Math.round(this.genes[14].value); // binary 0 or 1
 
@@ -325,7 +325,7 @@ class Warrior {
             }
         }
     
-        // Process received signals - removed signal trust check
+        // Process received signals
 
         normalize(cohesion);
         normalize(alignment);
